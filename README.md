@@ -45,19 +45,19 @@ It allows tracking shared expenses, automatically calculating debts, and keeping
 - Simple payments (“Mark as Paid”)  
 
 ### Reputation System
-- Leaving or canceling with debt → -1 point  
-- Leaving or canceling without debt → +1 point  
-- Owner removing member with debt → debt transferred to owner  
+- **Financial Accountability:** Automatic score adjustment (+1/-1) based on debt status upon leaving.
+- **Debt Imputation:** If an Owner removes a member with a pending debt, that debt is internally reassigned to the Owner to protect the group's balance.
 
 ---
 
 ## Actors & Roles
 
-| Role | Description |
-|------|-------------|
-| **Member** | Standard user. Can add expenses, view balance, mark payments, leave colocation. |
-| **Owner** | Creator of a colocation. Can invite/remove members, manage categories, cancel colocation. |
-| **Global Admin** | Platform-wide admin. Can view all statistics, ban/unban users, can also be Owner/Member. |
+| Role | Context | Key Permissions |
+|------|---------|-----------------|
+| **Guest** | `colocation_id` is NULL | Register, Login, Create or Join a house. |
+| **Member** | `colocation_id` is Set | Add expenses, view debts, mark payments, leave house. |
+| **Owner** | `colocation_role` is 'owner' | All Member permissions + Invite/Remove members & Cancel house. |
+| **Global Admin**| `is_global_admin` is True | Ban/Unban users, view global stats (Can also be a Member/Owner). |
 
 ---
 
@@ -123,10 +123,10 @@ php artisan migrate --seed
 **Tables:** users, colocations, memberships, expenses, categories, payments, reputation
 
 **Relationships:**
-- User ↔ Colocation (hasMany / belongsToMany)
-- Colocation ↔ Expense (hasMany)
-- Expense ↔ User (payer)
-- Membership ↔ User & Colocation (pivot table)
+- **User → Colocation (`BelongsTo`):** Strictly enforces the "one active colocation" rule via a single foreign key.
+- **Colocation → User (`HasMany`):** Manages the list of current roommates.
+- **User → Expense (`HasMany`):** Identifies the payer for each transaction.
+- **User → Settlement (`HasMany`):** Handles the "Debtor" and "Creditor" relationships for simplified reimbursements.
 
 ## Security & Validation
 
