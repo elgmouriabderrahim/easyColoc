@@ -78,7 +78,7 @@
             </div>
 
             <div class="mb-8">
-                <h1 class="text-2xl font-bold tracking-tight">Sign in</h1>
+                <h1 class="text-2xl font-bold tracking-tight">Log in</h1>
                 <p class="text-gray-500 text-sm mt-1">Enter your credentials to continue.</p>
             </div>
 
@@ -107,11 +107,11 @@
 
                 <div class="flex items-center">
                     <input id="remember_me" type="checkbox" name="remember" class="rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500">
-                    <span class="ms-2 text-xs text-gray-400">Keep me signed in</span>
+                    <span class="ms-2 text-xs text-gray-400">Keep me Loged in</span>
                 </div>
 
                 <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl">
-                    Enter Dashboard
+                    Log in
                 </button>
             </form>
 
