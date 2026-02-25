@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -18,9 +20,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'full_name',
+        'colocation_id',
         'email',
         'password',
+        'role',
+        'reputation_score',
+        'colocation_role',
+        'is_banned',
     ];
 
     /**
@@ -43,6 +50,27 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_banned' => 'boolean',
         ];
+    }
+
+    public function colocation(): BelongsTo
+    {
+        return $this->belongsTo(Colocation::class);
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function owedSettlements(): HasMany
+    {
+        return $this->hasMany(Settlement::class, 'owes_user_id');
+    }
+
+    public function receivedSettlements(): HasMany
+    {
+        return $this->hasMany(Settlement::class, 'receives_user_id');
     }
 }
