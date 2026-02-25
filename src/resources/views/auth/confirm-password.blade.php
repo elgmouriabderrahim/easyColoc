@@ -14,7 +14,7 @@
         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_10%_10%,rgba(59,130,246,0.12)_0%,transparent_40%),radial-gradient(circle_at_90%_90%,rgba(16,185,129,0.08)_0%,transparent_40%)]"></div>
     </div>
 
-    <div class="w-full max-w-4xl grid lg:grid-cols-2 bg-white/[0.03] backdrop-blur-[20px] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl animate__animated animate__zoomIn">
+    <div class="w-full max-w-4xl grid lg:grid-cols-2 bg-white/[0.03] backdrop-blur-[20px] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
         
         <div class="hidden lg:flex flex-col justify-between p-12 bg-[url('/images/logbg.webp')] bg-cover bg-center border-r border-white/5 relative">
             <div class="absolute inset-0 bg-black/40"></div>
@@ -58,7 +58,7 @@
 
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-2">Password</label>
-                    <input id="password" type="password" name="password" required autocomplete="current-password" 
+                    <input id="password" type="password" name="password"  autocomplete="current-password" 
                            class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" 
                            placeholder="••••••••">
                     @if($errors->has('password'))
