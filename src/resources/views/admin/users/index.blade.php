@@ -17,6 +17,32 @@
         </div>
     </x-slot>
 
+    <div id="alert-container" class="space-y-4 mb-6">
+        @if (session('success'))
+            <div class="js-alert p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold uppercase tracking-widest flex items-center justify-between shadow-lg backdrop-blur-md transition-all duration-500">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    {{ session('success') }}
+                </div>
+                <button onclick="this.parentElement.remove()" class="hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="js-alert p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase tracking-widest flex items-center justify-between shadow-lg backdrop-blur-md transition-all duration-500">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    {{ session('error') }}
+                </div>
+                <button onclick="this.parentElement.remove()" class="hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        @endif
+    </div>
+
     <div class="bg-zinc-900/40 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
         <table class="w-full text-left border-collapse">
             <thead>
@@ -33,16 +59,17 @@
                     <td class="px-8 py-6">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center font-black text-white shadow-xl relative">
-                                {{ strtoupper(substr($user->full_name, 0, 1)) }}
                                 @if($user->role === 'admin')
-                                    <div class="absolute -top-1 -right-1 bg-amber-500 p-1 rounded-md shadow-lg border border-black">
-                                        <i data-lucide="crown" class="w-2.5 h-2.5 text-black"></i>
+                                    <div class="absolute -top-1 -right-1 bg-amber-500 p-1 rounded-md shadow-lg border border-white">
+                                        <i data-lucide="crown" class="w-2.5 h-2.5 text-white"></i>
                                     </div>
+                                @else
+                                 {{ strtoupper(substr($user->full_name, 0, 1)) }}
                                 @endif
                             </div>
                             <div>
                                 <p class="text-sm font-black text-white tracking-tight group-hover:text-blue-400 transition-colors">{{ $user->full_name }}</p>
-                                <p class="text-[10px] text-zinc-500 font-bold tracking-wider">{{ $user->email }}</p>
+                                <p class="text-[10px] text-zinc-500 font-bold tracking-wider uppercase tracking-widest">{{ $user->email }}</p>
                             </div>
                         </div>
                     </td>
@@ -59,7 +86,7 @@
                         </div>
                     </td>
 
-                    <td class="px-8 py-6">
+                    <td class="px-8 py-6 text-center">
                         <div class="flex justify-center">
                             @if($user->colocation_role === 'owner')
                                 <span class="px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[9px] font-black uppercase tracking-widest">
@@ -83,11 +110,11 @@
                                 
                                 @if($user->is_banned)
                                     <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20 text-[10px] font-black uppercase tracking-widest active:scale-95">
-                                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Restore
+                                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Unban
                                     </button>
                                 @else
                                     <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-950 text-red-500 border border-red-500/30 hover:bg-red-600 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest active:scale-95">
-                                        <i data-lucide="user-minus" class="w-3.5 h-3.5"></i> Terminate
+                                        <i data-lucide="user-minus" class="w-3.5 h-3.5"></i> Ban
                                     </button>
                                 @endif
                             </form>
@@ -100,4 +127,24 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.js-alert');
+            
+            alerts.forEach(function(alert) {
+                // Wait 5 seconds
+                setTimeout(function() {
+                    // Fade out
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'scale(0.95)';
+                    
+                    // Remove from DOM after transition (500ms match duration-500)
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 500);
+                }, 5000);
+            });
+        });
+    </script>
 </x-app-layout>
