@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Email | EasyColoc</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script src="https://unpkg.com/@lucide/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden">
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden [font-family:'Inter',sans-serif]">
 
     <div class="fixed inset-0 z-[-1] overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_10%_10%,rgba(59,130,246,0.12)_0%,transparent_40%),radial-gradient(circle_at_90%_90%,rgba(16,185,129,0.08)_0%,transparent_40%)]"></div>
     </div>
 
-    <div class="w-full max-w-4xl grid lg:grid-cols-2 bg-white/[0.03] backdrop-blur-[20px] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl ">
+    <div class="w-full max-w-4xl grid lg:grid-cols-2 bg-white/[0.03] backdrop-blur-[20px] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
         
         <div class="hidden lg:flex flex-col justify-between p-12 bg-[url('/images/logbg.webp')] bg-cover bg-center border-r border-white/5 relative">
             <div class="absolute inset-0 bg-black/30"></div>
@@ -42,6 +41,9 @@
 
         <div class="p-8 lg:p-12 flex flex-col justify-center bg-black/40">
             <div class="mb-8">
+                <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mb-6">
+                    <i data-lucide="mail-check" class="text-blue-500 w-6 h-6"></i>
+                </div>
                 <h1 class="text-2xl font-bold tracking-tight text-white">Verify Your Email</h1>
                 <p class="text-gray-400 text-sm mt-4 leading-relaxed">
                     {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you?') }}
@@ -49,9 +51,10 @@
             </div>
 
             @if (session('status') == 'verification-link-sent')
-                <div class="mb-8 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <div class="mb-8 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex gap-3 items-start">
+                    <i data-lucide="send" class="text-emerald-400 w-4 h-4 mt-0.5"></i>
                     <p class="text-emerald-400 text-xs font-medium">
-                        {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+                        {{ __('A new verification link has been sent to your email address.') }}
                     </p>
                 </div>
             @endif
@@ -59,14 +62,21 @@
             <div class="space-y-4">
                 <form method="POST" action="{{ route('verification.send') }}">
                     @csrf
-                    <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-[0.98]">
+                    <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                         {{ __('Resend Verification Email') }}
                     </button>
                 </form>
 
+                <button id="checkVerification" class="w-full py-4 bg-emerald-500 text-white rounded-xl font-bold text-sm hover:bg-emerald-600 transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    {{ __('Check Verification Status') }}
+                </button>
+
                 <form method="POST" action="{{ route('logout') }}" class="text-center">
                     @csrf
-                    <button type="submit" class="text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors">
+                    <button type="submit" class="text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto mt-4">
+                        <i data-lucide="log-out" class="w-3 h-3"></i>
                         {{ __('Log Out') }}
                     </button>
                 </form>
@@ -74,6 +84,26 @@
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        document.getElementById('checkVerification').addEventListener('click', async () => {
+            try {
+                const res = await fetch('{{ route("verification.status") }}', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await res.json();
+                if(data.verified) {
+                    window.location.href = '{{ route("dashboard") }}';
+                } else {
+                    alert('Your email is not verified yet. Please check your inbox.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Something went wrong. Please try again.');
+            }
+        });
+    </script>
 </body>
 </html>

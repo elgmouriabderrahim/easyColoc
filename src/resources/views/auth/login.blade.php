@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | EasyColoc</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script src="https://unpkg.com/@lucide/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-[#000] text-white h-screen flex items-center justify-center overflow-hidden [font-family:'Inter',sans-serif]">
+<body class="bg-black text-white h-screen flex items-center justify-center overflow-hidden [font-family:'Inter',sans-serif]">
 
     <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_10%_10%,rgba(59,130,246,0.12)_0%,transparent_40%),radial-gradient(circle_at_90%_90%,rgba(16,185,129,0.08)_0%,transparent_40%)]"></div>
 
@@ -22,14 +22,12 @@
                     <span class="text-xs font-bold tracking-[0.2em] uppercase opacity-60">EasyColoc</span>
                 </a>
             </div>
-
             <div class="relative z-10">
                 <h2 class="text-5xl leading-tight mb-6 italic [font-family:'Playfair_Display',serif] font-black text-white">Welcome<br>Back.</h2>
                 <p class="text-gray-400 text-sm leading-relaxed max-w-xs">
                     Access your household dashboard to settle expenses and maintain your high-status reputation.
                 </p>
             </div>
-
             <div class="relative z-10 flex items-center gap-4 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
                 <span>Security Verified</span>
                 <div class="h-1 w-1 bg-white/20 rounded-full"></div>
@@ -52,8 +50,12 @@
 
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-2">Email Address</label>
-                    <input type="email" name="email" value="{{ old('email') }}" autofocus 
-                           class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('email') ? 'border-red-500' : 'border-white/10' }} text-white transition-all duration-300 outline-none focus:border-[#3b82f6] focus:bg-white/[0.08] focus:ring-[4px] focus:ring-[#3b82f6]/10" placeholder="resident@easycoloc.com">
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4"></i>
+                        <input type="email" name="email" value="{{ old('email') }}" autofocus
+                               class="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('email') ? 'border-red-500' : 'border-white/10' }} text-white placeholder:text-gray-500 focus:border-[#3b82f6] focus:bg-white/[0.08] focus:ring-[#3b82f6]/10 focus:ring-2 outline-none transition-all"
+                               placeholder="resident@easycoloc.com">
+                    </div>
                     @if($errors->has('email'))
                         <p class="text-red-500 text-[11px] mt-1 font-medium">{{ $errors->first('email') }}</p>
                     @endif
@@ -66,8 +68,12 @@
                             <a href="{{ route('password.request') }}" class="text-[10px] uppercase font-bold text-blue-500 hover:text-white transition-colors duration-300">Forgot?</a>
                         @endif
                     </div>
-                    <input type="password" name="password"  
-                           class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('password') ? 'border-red-500' : 'border-white/10' }} text-white transition-all duration-300 outline-none focus:border-[#3b82f6] focus:bg-white/[0.08] focus:ring-[4px] focus:ring-[#3b82f6]/10" placeholder="••••••••">
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4"></i>
+                        <input type="password" name="password"
+                               class="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('password') ? 'border-red-500' : 'border-white/10' }} text-white placeholder:text-gray-500 focus:border-[#3b82f6] focus:bg-white/[0.08] focus:ring-[#3b82f6]/10 focus:ring-2 outline-none transition-all"
+                               placeholder="••••••••">
+                    </div>
                     @if($errors->has('password'))
                         <p class="text-red-500 text-[11px] mt-1 font-medium">{{ $errors->first('password') }}</p>
                     @endif
@@ -90,6 +96,8 @@
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

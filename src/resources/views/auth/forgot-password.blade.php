@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password | EasyColoc</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script src="https://unpkg.com/@lucide/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden">
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden [font-family:'Inter',sans-serif]">
 
     <div class="fixed inset-0 z-[-1] overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_10%_10%,rgba(59,130,246,0.12)_0%,transparent_40%),radial-gradient(circle_at_90%_90%,rgba(16,185,129,0.08)_0%,transparent_40%)]"></div>
@@ -53,8 +52,9 @@
             </div>
 
             @if (session('status'))
-                <div class="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                    <p class="text-blue-400 text-xs font-medium">
+                <div class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3">
+                    <i data-lucide="check-circle" class="text-emerald-400 w-4 h-4"></i>
+                    <p class="text-emerald-400 text-xs font-medium">
                         {{ session('status') }}
                     </p>
                 </div>
@@ -65,26 +65,32 @@
 
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-2">Email Address</label>
-                    <input id="email" type="email" name="email" value="{{ old('email') }}"  autofocus 
-                           class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" 
-                           placeholder="you@example.com">
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4"></i>
+                        <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus 
+                               class="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('email') ? 'border-red-500' : 'border-white/10' }} text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" 
+                               placeholder="you@example.com">
+                    </div>
                     @if($errors->has('email'))
-                        <p class="text-red-400 text-[10px] mt-2">{{ $errors->first('email') }}</p>
+                        <p class="text-red-500 text-[11px] mt-2 font-medium">{{ $errors->first('email') }}</p>
                     @endif
                 </div>
 
-                <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-[0.98]">
+                <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i>
                     {{ __('Email Password Reset Link') }}
                 </button>
             </form>
 
             <p class="mt-8 text-center text-xs text-gray-500">
                 Remembered it? 
-                <a href="{{ route('login') }}" class="text-white font-bold hover:underline">Go back to log in</a>
+                <a href="{{ route('login') }}" class="text-white font-bold hover:underline decoration-blue-500 decoration-2 underline-offset-4">Go back to log in</a>
             </p>
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

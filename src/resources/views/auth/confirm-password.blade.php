@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Access | EasyColoc</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script src="https://unpkg.com/@lucide/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden">
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden [font-family:'Inter',sans-serif]">
 
     <div class="fixed inset-0 z-[-1] overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_10%_10%,rgba(59,130,246,0.12)_0%,transparent_40%),radial-gradient(circle_at_90%_90%,rgba(16,185,129,0.08)_0%,transparent_40%)]"></div>
@@ -43,8 +42,8 @@
         <div class="p-8 lg:p-12 flex flex-col justify-center bg-black/40">
             <div class="mb-8">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="p-3 bg-blue-500/10 rounded-full border border-blue-500/20">
-                        <i data-lucide="lock" class="w-5 h-5 text-blue-500"></i>
+                    <div class="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-blue-500"></i>
                     </div>
                     <h1 class="text-2xl font-bold tracking-tight text-white">Security Check</h1>
                 </div>
@@ -58,27 +57,34 @@
 
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-2">Password</label>
-                    <input id="password" type="password" name="password"  autocomplete="current-password" 
-                           class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" 
-                           placeholder="••••••••">
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4"></i>
+                        <input id="password" type="password" name="password" required autocomplete="current-password" 
+                               class="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('password') ? 'border-red-500' : 'border-white/10' }} text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" 
+                               placeholder="••••••••">
+                    </div>
                     @if($errors->has('password'))
-                        <p class="text-red-400 text-[10px] mt-2 font-medium">{{ $errors->first('password') }}</p>
+                        <p class="text-red-500 text-[11px] mt-2 font-medium">{{ $errors->first('password') }}</p>
                     @endif
                 </div>
 
-                <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-[0.98]">
+                <button type="submit" class="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-[0.98] flex items-center justify-center gap-2">
+                    <i data-lucide="key-round" class="w-4 h-4"></i>
                     {{ __('Confirm Access') }}
                 </button>
             </form>
 
             <div class="mt-8 text-center">
-                <a href="{{ url()->previous() }}" class="text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors">
+                <a href="{{ url()->previous() }}" class="text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto">
+                    <i data-lucide="arrow-left" class="w-3 h-3"></i>
                     Go Back
                 </a>
             </div>
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

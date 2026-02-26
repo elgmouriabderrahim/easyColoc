@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password | EasyColoc</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script src="https://unpkg.com/@lucide/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden">
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6 selection:bg-blue-500/30 overflow-hidden [font-family:'Inter',sans-serif]">
 
     <div class="fixed inset-0 z-[-1] overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_10%_10%,rgba(59,130,246,0.12)_0%,transparent_40%),radial-gradient(circle_at_90%_90%,rgba(16,185,129,0.08)_0%,transparent_40%)]"></div>
@@ -53,26 +52,35 @@
 
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-2">Email Address</label>
-                    <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}"  autofocus 
-                           class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" />
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4"></i>
+                        <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}" required readonly 
+                               class="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white/[0.02] border border-white/5 text-gray-500 cursor-not-allowed outline-none" />
+                    </div>
                     @if($errors->has('email'))
-                        <p class="text-red-400 text-[10px] mt-1">{{ $errors->first('email') }}</p>
+                        <p class="text-red-500 text-[11px] mt-1 font-medium">{{ $errors->first('email') }}</p>
                     @endif
                 </div>
 
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-2">New Password</label>
-                    <input id="password" type="password" name="password"  
-                           class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" placeholder="••••••••" />
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4"></i>
+                        <input id="password" type="password" name="password" required autofocus
+                               class="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('password') ? 'border-red-500' : 'border-white/10' }} text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" placeholder="••••••••" />
+                    </div>
                     @if($errors->has('password'))
-                        <p class="text-red-400 text-[10px] mt-1">{{ $errors->first('password') }}</p>
+                        <p class="text-red-500 text-[11px] mt-1 font-medium">{{ $errors->first('password') }}</p>
                     @endif
                 </div>
 
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mb-2">Confirm Password</label>
-                    <input id="password_confirmation" type="password" name="password_confirmation"  
-                           class="w-full px-4 py-3 rounded-xl text-sm bg-white/[0.05] border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" placeholder="••••••••" />
+                    <div class="relative">
+                        <i data-lucide="check-circle" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4"></i>
+                        <input id="password_confirmation" type="password" name="password_confirmation" required
+                               class="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white/[0.05] border {{ $errors->has('password') ? 'border-red-500' : 'border-white/10' }} text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500 transition-all" placeholder="••••••••" />
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full py-4 mt-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-[0.98]">
@@ -82,6 +90,8 @@
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
