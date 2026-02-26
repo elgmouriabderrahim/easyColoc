@@ -72,6 +72,7 @@
                     <i data-lucide="shield-check" class="w-4 h-4"></i>
                     {{ __('Check Verification Status') }}
                 </button>
+                <div id="verificationStatus" class="text-xs text-red-400 mt-2"></div>
 
                 <form method="POST" action="{{ route('logout') }}" class="text-center">
                     @csrf
@@ -85,7 +86,6 @@
     </div>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
         document.getElementById('checkVerification').addEventListener('click', async () => {
@@ -97,7 +97,7 @@
                 if(data.verified) {
                     window.location.href = '{{ route("dashboard") }}';
                 } else {
-                    alert('Your email is not verified yet. Please check your inbox.');
+                    document.getElementById('verificationStatus').innerText = 'Your email is not verified yet. Please check your inbox.';
                 }
             } catch (err) {
                 console.error(err);
