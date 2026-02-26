@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\StatisticsController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -18,8 +21,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->name('admin.')->prefix('admin')->group(function () {
-    Route::get('/users',[usersController::class, 'index'])->name('users');
-    Route::get('/statistics',[usersController::class, 'statistics'])->name('statistics');
+    Route::get('/users',[UsersController::class, 'index'])->name('users');
+    Route::post('/users/{user}/toggle-ban',[UsersController::class, 'toggleBan'])->name('users.toggle-ban');
+
+
+    Route::get('/statistics',[StatisticsController::class, 'index'])->name('statistics');
 });
 
 require __DIR__.'/auth.php';
