@@ -30,11 +30,69 @@
                 </div>
 
                 <nav class="flex-grow px-4 space-y-2">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-gray-400 hover:bg-white/5 hover:text-white' }}">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                        <span class="text-sm font-bold">Dashboard</span>
+                    <a href="{{ route('dashboard') }}" 
+                        class="relative group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out
+                        {{ request()->routeIs('dashboard') 
+                                ? 'bg-blue-600/10 border border-blue-500/20 text-white shadow-[0_0_20px_rgba(59,130,246,0.1)]' 
+                                : 'text-zinc-500 hover:bg-white/[0.03] hover:text-zinc-200 border border-transparent' 
+                        }}">
+                            @if(request()->routeIs('dashboard'))
+                                <div class="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full"></div>
+                            @endif
+                            <div class="flex items-center justify-center transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('dashboard') ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300' }}">
+                                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-sm font-bold tracking-tight">
+                                {{ __('Dashboard') }}
+                            </span>
+                            <i data-lucide="chevron-right" 
+                            class="ml-auto w-3 h-3 opacity-0 -translate-x-2 transition-all duration-300 
+                            {{ request()->routeIs('dashboard') ? 'opacity-40 translate-x-0' : 'group-hover:opacity-40 group-hover:translate-x-0' }}">
+                            </i>
                     </a>
-                    </nav>
+                    @if(Auth::user()->role === 'admin')
+                    <a href="{{ route('admin.users') }}"
+                        class="relative group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out
+                        {{ request()->routeIs('admin.users')
+                                ? 'bg-blue-600/10 border border-blue-500/20 text-white shadow-[0_0_20px_rgba(59,130,246,0.1)]' 
+                                : 'text-zinc-500 hover:bg-white/[0.03] hover:text-zinc-200 border border-transparent' 
+                        }}">
+                            @if(request()->routeIs('admin.users'))
+                                <div class="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full"></div>
+                            @endif
+                            <div class="flex items-center justify-center transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('admin.users') ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300' }}">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-sm font-bold tracking-tight">
+                                {{ __('Users') }}
+                            </span>
+                            <i data-lucide="chevron-right" 
+                            class="ml-auto w-3 h-3 opacity-0 -translate-x-2 transition-all duration-300 
+                            {{ request()->routeIs('admin.users') ? 'opacity-40 translate-x-0' : 'group-hover:opacity-40 group-hover:translate-x-0' }}">
+                            </i>
+                    </a>
+                    <a href="{{ route('admin.statistics') }}" 
+                        class="relative group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out
+                        {{ request()->routeIs('admin.statistics')
+                                ? 'bg-blue-600/10 border border-blue-500/20 text-white shadow-[0_0_20px_rgba(59,130,246,0.1)]' 
+                                : 'text-zinc-500 hover:bg-white/[0.03] hover:text-zinc-200 border border-transparent' 
+                        }}">
+                            @if(request()->routeIs('admin.statistics'))
+                                <div class="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full"></div>
+                            @endif
+                            <div class="flex items-center justify-center transition-transform duration-300 group-hover:scale-110 {{ request()->routeIs('admin.statistics') ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300' }}">
+                                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-sm font-bold tracking-tight">
+                                {{ __('Statistics') }}
+                            </span>
+                            <i data-lucide="chevron-right" 
+                            class="ml-auto w-3 h-3 opacity-0 -translate-x-2 transition-all duration-300 
+                            {{ request()->routeIs('admin.statistics') ? 'opacity-40 translate-x-0' : 'group-hover:opacity-40 group-hover:translate-x-0' }}">
+                            </i>
+                    </a>
+                    @endif
+                </nav>
 
                 <div class="p-6 border-t border-white/5">
                     <p class="text-[9px] text-gray-600 uppercase tracking-[0.3em] font-black mb-4 ml-2">Secure Session</p>
