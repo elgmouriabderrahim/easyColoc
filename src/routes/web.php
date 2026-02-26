@@ -22,8 +22,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin'])->name('admin.')->prefix('admin')->group(function () {
     Route::get('/users',[UsersController::class, 'index'])->name('users');
-    Route::post('/users/{user}/toggle-ban',[UsersController::class, 'toggleBan'])->name('users.toggle-ban');
-
+    Route::patch('/users/{user}/toggle-ban',[UsersController::class, 'toggleBan'])->name('users.toggle-ban');
 
     Route::get('/statistics',[StatisticsController::class, 'index'])->name('statistics');
 });
