@@ -18,10 +18,8 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // 1. The Main View
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // 2. Colocation Management
     Route::prefix('dashboard/colocation')->name('dashboard.colocation.')->group(function () {
         Route::post('/', [ColocationController::class, 'store'])->name('create');
         Route::post('/join', [ColocationController::class, 'join'])->name('join');
@@ -30,23 +28,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/invite-token', [ColocationController::class, 'regenerateInviteToken'])->name('invite-token.regenerate');
     });
 
-    // 3. Expenses (Resourceful)
     Route::post('/dashboard/expenses', [ExpenseController::class, 'store'])->name('dashboard.expenses.create');
     Route::delete('/dashboard/expenses/{expense}', [ExpenseController::class, 'destroy'])->name('dashboard.expenses.delete');
 
-    // 4. Members
     Route::prefix('dashboard/members')->name('dashboard.members.')->group(function () {
         Route::post('/invite', [MemberController::class, 'invite'])->name('invite');
         Route::delete('/{member}', [MemberController::class, 'destroy'])->name('delete');
     });
 
-    // 5. Categories
     Route::prefix('dashboard/categories')->name('dashboard.categories.')->group(function () {
         Route::post('/', [CategoryController::class, 'store'])->name('create');
         Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('delete');
     });
 
-    // 6. Settlements
     Route::patch('/dashboard/settlements/{settlement}/paid', [SettlementController::class, 'markAsPaid'])->name('dashboard.settlements.paid');
 });
 
