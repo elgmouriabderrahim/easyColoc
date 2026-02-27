@@ -43,6 +43,40 @@ class ColocationController extends Controller
         return redirect()->route('dashboard');
     }
 
+    public function cancel(Request $request)
+    {
+        $user = $request->user();
+
+        if (! $user->colocation_id || $user->colocation_role !== 'owner') {
+            abort(403);
+        }
+
+        $colocation = Colocation::findOrFail($user->colocation_id);
+
+        DB::transaction(function () use ($colocation) {
+            User::where('colocation_id', $colocation->id)
+                ->update(['colocation_id' => null, 'colocation_role' => null]);
+
+            $colocation->update(['status' => 'cancelled']);
+        });
+
+        return redirect()->route('dashboard')->with('status', 'Colocation cancelled.');
+    }
+
+    public function regenerateInviteToken(Request $request)
+    {
+        $user = $request->user();
+
+        if (! $user->colocation_id || $user->colocation_role !== 'owner') {
+            abort(403);
+        }
+
+        $colocation = Colocation::findOrFail($user->colocation_id);
+        $colocation->update(['invite_token' => $this->generateUniqueInviteToken()]);
+
+        return back()->with('status', 'Invite token regenerated.');
+    }
+
     private function generateUniqueInviteToken(): string
     {
         do { $token = Str::upper(Str::random(10)); } 
