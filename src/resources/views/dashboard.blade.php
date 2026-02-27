@@ -143,7 +143,7 @@
                             <h4 class="text-4xl font-black {{ $stats['balance'] >= 0 ? 'text-emerald-400' : 'text-red-500' }} tracking-tighter">
                                 {{ number_format($stats['balance'], 2) }} DH
                             </h4>
-                            <p class="text-[9px] text-zinc-600 uppercase font-black mt-4">Colocation Total: {{ number_format($stats['total_spent'], 2) }}€</p>
+                            <p class="text-[9px] text-zinc-600 uppercase font-black mt-4">Colocation Total: {{ number_format($stats['total_spent'], 2) }} DH</p>
                         </div>
 
                         <div class="bg-[#18181f] border border-white/[0.05] rounded-2xl p-6 shadow-2xl space-y-4">
@@ -197,7 +197,7 @@
                                             <p class="text-xs font-bold text-white tracking-tight">{{ $expense->title }}</p>
                                             <p class="text-[9px] text-zinc-600 uppercase font-black tracking-widest mt-1">{{ $expense->category->name }}</p>
                                         </td>
-                                        <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($expense->amount, 2) }}€</td>
+                                        <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($expense->amount, 2) }} DH</td>
                                         <td class="px-8 py-5 text-right">
                                             @if($expense->user_id === Auth::id())
                                                 <form action="{{ route('dashboard.expenses.delete', $expense->id) }}" method="POST">
@@ -213,6 +213,46 @@
                         </div>
                         <div class="p-4 border-t border-white/5 bg-black/10">
                             {{ $expenses->links() }}
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-[#18181f] border border-white/[0.05] rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="p-6 bg-white/[0.02] border-b border-white/[0.05] flex justify-between items-center">
+                            <h3 class="text-white font-bold text-xs uppercase tracking-widest">Settlements</h3>
+                            <span class="text-[10px] text-zinc-500 font-mono">{{ $settlements->count() }} Entries</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <tbody class="divide-y divide-white/[0.02]">
+                                    @forelse($settlements as $settlement)
+                                    <tr class="group hover:bg-white/[0.01] transition-colors">
+                                        <td class="px-8 py-5 text-[10px] text-zinc-500 font-mono">{{ $settlement->created_at->format('Y.m.d') }}</td>
+                                        <td class="px-8 py-5 text-xs text-zinc-300 font-bold">
+                                            {{ $settlement->owes->full_name }}
+                                            <span class="text-zinc-600">→</span>
+                                            {{ $settlement->receives->full_name }}
+                                        </td>
+                                        <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($settlement->amount, 2) }} DH</td>
+                                        <td class="px-8 py-5 text-right">
+                                            @if($settlement->is_paid)
+                                                <span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Paid</span>
+                                            @elseif($settlement->owes_user_id === Auth::id())
+                                                <form action="{{ route('dashboard.settlements.paid', $settlement->id) }}" method="POST">
+                                                    @csrf @method('PATCH')
+                                                    <button class="text-[9px] bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg uppercase tracking-widest font-black transition-colors">Mark Paid</button>
+                                                </form>
+                                            @else
+                                                <span class="text-[9px] bg-white/5 text-zinc-500 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Pending</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="px-8 py-8 text-center text-[10px] uppercase tracking-widest text-zinc-600">No settlements yet.</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

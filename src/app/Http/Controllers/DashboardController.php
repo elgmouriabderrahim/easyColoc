@@ -15,17 +15,17 @@ class DashboardController extends Controller
     {
         $user = $request->user()->load('colocation');
         
-        $categories = Category::orderBy('name')->get();
 
         if (! $user->colocation_id || ! $user->colocation || $user->colocation->status !== 'active') {
             return view('dashboard', [
                 'hasColocation' => false,
-                'categories' => $categories,
+                'categories' => collect()
             ]);
         }
 
+        $categories = Category::where('colocation_id', $user->colocation_id)->orderBy('name')->get();
+
         $colocation = Colocation::with('users')->findOrFail($user->colocation_id);
-        $memberIds = $colocation->users->pluck('id');
 
         $expenses = Expense::with(['user', 'category'])
             ->where('colocation_id', $colocation->id)
@@ -42,9 +42,8 @@ class DashboardController extends Controller
         $share = round($totalSpent / $memberCount, 2);
 
         $settlements = Settlement::with(['owes', 'receives'])
+            ->where('colocation_id', $colocation->id)
             ->where(fn($q) => $q->where('owes_user_id', $user->id)->orWhere('receives_user_id', $user->id))
-            ->whereIn('owes_user_id', $memberIds)
-            ->whereIn('receives_user_id', $memberIds)
             ->latest()
             ->get();
 
