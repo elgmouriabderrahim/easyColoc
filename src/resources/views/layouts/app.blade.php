@@ -16,7 +16,7 @@
     <body class="font-sans antialiased bg-[#0c0c0e] text-gray-200 overflow-x-hidden">
         
         <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_15%_15%,rgba(59,130,246,0.15)_0%,transparent_50%)]"></div>
+            <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.15)_0%,transparent_100%)]"></div>
         </div>
 
         <div class="relative z-10 flex min-h-screen">
@@ -94,18 +94,32 @@
                     @endif
                 </nav>
 
-                <div class="p-6 border-t border-white/5">
-                    <p class="text-[9px] text-gray-600 uppercase tracking-[0.3em] font-black mb-4 ml-2">Secure Session</p>
-                    <div class="flex items-center gap-4 px-4 py-3 bg-white/[0.03] rounded-2xl border border-white/5">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg border border-white/10 text-xs">
-                            {{ strtoupper(substr(Auth::user()->full_name, 0, 1)) }}
-                        </div>
-                        <div class="overflow-hidden">
-                            <p class="text-xs font-black text-white truncate">{{ Auth::user()->full_name }}</p>
-                            <span class="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-bold uppercase tracking-widest">Resident</span>
-                        </div>
-                    </div>
+<div class="p-6 border-t border-white/[0.05] bg-white/[0.01]">
+    <p class="text-[9px] text-zinc-600 uppercase tracking-[0.3em] font-black mb-4 ml-1">Secure Session</p>
+    
+    <a href="{{ route('profile.edit') }}" class="group block">
+        <div class="flex items-center gap-4 p-4 bg-[#212129] rounded-xl border border-white/[0.05] shadow-inner transition-all duration-300 group-hover:bg-[#2a2a35] group-hover:border-purple-500/30">
+            <div class="w-10 h-10 rounded-lg bg-[#2a2a35] flex items-center justify-center font-bold text-white border border-white/10 text-xs shadow-lg relative transition-transform group-hover:scale-105">
+                {{ strtoupper(substr(Auth::user()->full_name, 0, 1)) }}
+                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-purple-500 rounded-full border-2 border-[#212129] animate-pulse"></div>
+            </div>
+
+            <div class="overflow-hidden space-y-1 flex-1">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-bold text-white truncate tracking-tight group-hover:text-purple-400 transition-colors">
+                        {{ Auth::user()->full_name }}
+                    </p>
+                    <i data-lucide="chevron-right" class="w-3 h-3 text-zinc-700 group-hover:text-purple-500 transition-colors"></i>
                 </div>
+                <div class="flex">
+                    <span class="text-[8px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded border border-purple-500/20 font-black uppercase tracking-[0.15em]">
+                        Authorized Resident
+                    </span>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
             </aside>
 
             <div class="flex-grow ml-72 flex flex-col min-h-screen">

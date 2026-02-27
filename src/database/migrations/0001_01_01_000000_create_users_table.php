@@ -6,17 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            
+            $table->string('full_name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->integer('reputation_score')->default(0);
+            
+            $table->foreignId('colocation_id')
+                  ->nullable()
+                  ->constrained('colocations')
+                  ->nullOnDelete();
+            $table->enum('colocation_role', ['owner', 'member'])->nullable();
+            
+            $table->boolean('is_banned')->default(false);
+            
             $table->rememberToken();
             $table->timestamps();
         });
@@ -37,9 +47,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
