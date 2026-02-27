@@ -15,6 +15,7 @@ class Settlement extends Model
         'receives_user_id',
         'amount',
         'is_paid',
+        'colocation_id',
     ];
 
     protected function casts(): array
@@ -33,5 +34,9 @@ class Settlement extends Model
     public function receives(): BelongsTo
     {
         return $this->belongsTo(User::class, 'receives_user_id');
+    }
+    public function colocation(): BelongsTo
+    {
+        return $this->belongsTo(Colocation::class);
     }
 }
