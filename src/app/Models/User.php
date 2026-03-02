@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'reputation_score',
         'colocation_role',
         'is_banned',
+        'balance'
     ];
 
     /**
@@ -52,6 +53,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_banned' => 'boolean',
+            'balance' => 'float',
+            'reputation_score' => 'integer'
         ];
     }
 

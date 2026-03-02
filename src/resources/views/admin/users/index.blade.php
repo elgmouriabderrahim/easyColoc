@@ -1,6 +1,5 @@
 <x-app-layout>
-    <div class="min-h-screen bg-[#0d0d12] text-zinc-400 font-sans antialiased p-6 lg:p-12" 
-         x-data="{ activeTab: 'active' }">
+    <div class="min-h-screen bg-[#0d0d12] text-zinc-400 font-sans antialiased p-6 lg:p-12">
         
         <div class="max-w-[1300px] mx-auto space-y-6">
             
@@ -33,17 +32,15 @@
             </div>
 
             <div class="bg-[#18181f] border border-white/[0.05] rounded-xl shadow-2xl overflow-hidden">
-                <div class="flex border-b border-white/[0.05] bg-white/[0.02] px-4">
+                <div class="flex border-b border-white/[0.05] bg-white/[0.02] px-4" id="tab-headers">
                     <button 
-                        @click="activeTab = 'active'"
-                        :class="activeTab === 'active' ? 'text-purple-500 border-purple-500' : 'text-zinc-600 border-transparent hover:text-zinc-400'"
-                        class="py-3 px-6 text-[10px] font-bold border-b-2 uppercase tracking-[0.2em] transition-all outline-none">
+                        data-tab="active"
+                        class="tab-btn py-3 px-6 text-[10px] font-bold border-b-2 uppercase tracking-[0.2em] transition-all outline-none text-purple-500 border-purple-500">
                         Active Users
                     </button>
                     <button 
-                        @click="activeTab = 'banned'"
-                        :class="activeTab === 'banned' ? 'text-purple-500 border-purple-500' : 'text-zinc-600 border-transparent hover:text-zinc-400'"
-                        class="py-3 px-6 text-[10px] font-bold border-b-2 uppercase tracking-[0.2em] transition-all outline-none">
+                        data-tab="banned"
+                        class="tab-btn py-3 px-6 text-[10px] font-bold border-b-2 uppercase tracking-[0.2em] transition-all outline-none text-zinc-600 border-transparent hover:text-zinc-400">
                         Banned Users
                     </button>
                 </div>
@@ -58,14 +55,12 @@
                                 <th class="px-8 py-5 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 text-right">Operations</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-white/[0.02]">
+                        <tbody class="divide-y divide-white/[0.02]" id="user-table-body">
                             @foreach($users as $user)
                             <tr 
-                                x-show="activeTab === 'active' ? !{{ $user->is_banned ? 'true' : 'false' }} : {{ $user->is_banned ? 'true' : 'false' }}"
-                                x-transition:enter="transition ease-out duration-200"
-                                x-transition:enter-start="opacity-0"
-                                x-transition:enter-end="opacity-100"
-                                class="group hover:bg-white/[0.01] transition-all duration-200">
+                                data-banned="{{ $user->is_banned ? 'true' : 'false' }}"
+                                class="user-row group hover:bg-white/[0.01] transition-all duration-200"
+                                style="{{ $user->is_banned ? 'display: none;' : '' }}">
                                 
                                 <td class="px-8 py-6">
                                     <div class="flex items-center gap-4">
@@ -115,9 +110,9 @@
                                                 class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 
                                                 {{ $user->is_banned ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'bg-[#212129] text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white' }}">
                                                 @if($user->is_banned)
-                                                    <i data-lucide="refresh-cw" class="w-3 h-3"></i> Restore Identity
+                                                    <i data-lucide="refresh-cw" class="w-3 h-3"></i> Unban
                                                 @else
-                                                    <i data-lucide="slash" class="w-3 h-3"></i> Terminate
+                                                    <i data-lucide="ban" class="w-3 h-3"></i> Bann
                                                 @endif
                                             </button>
                                         </form>
@@ -128,7 +123,7 @@
                             </tr>
                             @endforeach
                             
-                            <tr x-cloak x-show="activeTab === 'active' ? !{{ $users->where('is_banned', false)->count() }} : !{{ $users->where('is_banned', true)->count() }}">
+                            <tr id="empty-state" style="display: none;">
                                 <td colspan="4" class="px-8 py-20 text-center">
                                     <p class="text-[10px] font-black text-zinc-700 uppercase tracking-[0.5em]">No Records Found in Current Protocol</p>
                                 </td>
@@ -140,8 +135,8 @@
                 <div class="p-6 border-t border-white/[0.05] bg-white/[0.01] flex justify-between items-center">
                     <p class="text-[9px] text-zinc-600 font-bold uppercase tracking-widest italic">Registry Integrity: Optimal</p>
                     <div class="flex gap-2">
-                         <div class="w-1.5 h-1.5 rounded-full" :class="activeTab === 'active' ? 'bg-purple-500' : 'bg-purple-500/20'"></div>
-                         <div class="w-1.5 h-1.5 rounded-full" :class="activeTab === 'banned' ? 'bg-purple-500' : 'bg-purple-500/20'"></div>
+                         <div id="dot-active" class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                         <div id="dot-banned" class="w-1.5 h-1.5 rounded-full bg-purple-500/20"></div>
                     </div>
                 </div>
             </div>
@@ -150,10 +145,62 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Icons
             if (window.lucide) {
                 window.lucide.createIcons();
             }
 
+            // Tab Logic
+            const tabs = document.querySelectorAll('.tab-btn');
+            const rows = document.querySelectorAll('.user-row');
+            const emptyState = document.getElementById('empty-state');
+            const dotActive = document.getElementById('dot-active');
+            const dotBanned = document.getElementById('dot-banned');
+
+            function switchTab(targetTab) {
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    const isBanned = row.getAttribute('data-banned') === 'true';
+                    if (targetTab === 'active') {
+                        row.style.display = isBanned ? 'none' : 'table-row';
+                        if (!isBanned) visibleCount++;
+                    } else {
+                        row.style.display = isBanned ? 'table-row' : 'none';
+                        if (isBanned) visibleCount++;
+                    }
+                });
+
+                emptyState.style.display = visibleCount === 0 ? 'table-row' : 'none';
+
+                tabs.forEach(btn => {
+                    if (btn.getAttribute('data-tab') === targetTab) {
+                        btn.classList.add('text-purple-500', 'border-purple-500');
+                        btn.classList.remove('text-zinc-600', 'border-transparent');
+                    } else {
+                        btn.classList.remove('text-purple-500', 'border-purple-500');
+                        btn.classList.add('text-zinc-600', 'border-transparent');
+                    }
+                });
+
+                // Update Dots
+                if (targetTab === 'active') {
+                    dotActive.classList.replace('bg-purple-500/20', 'bg-purple-500');
+                    dotBanned.classList.replace('bg-purple-500', 'bg-purple-500/20');
+                } else {
+                    dotBanned.classList.replace('bg-purple-500/20', 'bg-purple-500');
+                    dotActive.classList.replace('bg-purple-500', 'bg-purple-500/20');
+                }
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.getAttribute('data-tab')));
+            });
+
+            // Initial check for empty state on load
+            switchTab('active');
+
+            // Existing Alert Logic
             const alerts = document.querySelectorAll('.js-alert');
             alerts.forEach(function(alert) {
                 setTimeout(function() {

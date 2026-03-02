@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('password');
             
             $table->enum('role', ['admin', 'user'])->default('user');
+            $table->decimal('balance')->default(0);
             $table->integer('reputation_score')->default(0);
             
             $table->foreignId('colocation_id')

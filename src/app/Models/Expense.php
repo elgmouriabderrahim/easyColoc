@@ -17,6 +17,7 @@ class Expense extends Model
         'amount',
         'date',
         'title',
+        'description',
     ];
 
     protected function casts(): array
