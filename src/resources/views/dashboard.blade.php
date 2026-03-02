@@ -4,6 +4,19 @@
         <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center hidden">
             <div id="modal-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
             
+            <div id="modal-category" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
+                <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h3 class="text-white font-bold text-xl mb-6 uppercase tracking-widest">Add Category</h3>
+                <form action="{{ route('dashboard.categories.create') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <label class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Category Name</label>
+                    <input type="text" name="name" required placeholder="GROCERIES" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0 uppercase font-mono">
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Save Category</button>
+                </form>
+            </div>
+
             <div id="modal-invite" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
                 <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-4 h-4"></i>
@@ -48,6 +61,12 @@
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
                 <h3 class="text-white font-bold text-xl mb-6 uppercase tracking-widest">Log Expenditure</h3>
+                @if($categories->isEmpty())
+                    <div class="text-center py-6">
+                        <p class="text-[10px] text-red-500 font-black uppercase tracking-widest mb-4 italic">Protocol Locked: No Categories</p>
+                        <button onclick="openModal('category')" class="bg-white/5 border border-white/10 text-white text-[10px] px-6 py-3 rounded-lg uppercase tracking-widest font-black hover:bg-white/10 transition-all">Create Category First</button>
+                    </div>
+                @else
                 <form action="{{ route('dashboard.expenses.create') }}" method="POST" class="space-y-4">
                     @csrf
                     <input type="text" name="title" placeholder="Expense Title" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
@@ -63,6 +82,7 @@
                     <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
                     <button class="w-full bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Execute Transaction</button>
                 </form>
+                @endif
             </div>
 
             <div id="modal-confirm" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
@@ -88,15 +108,27 @@
         </div>
 
         <div class="max-w-[1300px] mx-auto space-y-8">
+            
+            @if (session('success'))
+                <div class="js-alert p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-black uppercase tracking-widest flex items-center justify-between backdrop-blur-md mb-6 transition-all duration-500">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        {{ session('success') }}
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="hover:text-white transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            @endif
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
                 <div class="space-y-1">
                     <h2 class="text-2xl font-bold text-white tracking-tight">
                         {{ $hasColocation ? $colocation->name : 'Identity Dashboard' }}
                     </h2>
-                    @if(Auth::user()->colocation_role === 'owner')
+                    @if($hasColocation && Auth::user()->colocation_role === 'owner')
                     <p class="text-[11px] text-zinc-500 uppercase tracking-[0.2em]">
-                        {{ $hasColocation ? 'System Colocation // ' . $colocation->invite_token : 'Status // Unlinked Resident' }}
+                        {{ 'System Colocation // ' . $colocation->invite_token }}
                     </p>
                     @else
                     <p class="text-[11px] text-zinc-500 uppercase tracking-[0.2em]">
@@ -114,6 +146,9 @@
                             Join Colocation
                         </button>
                     @else
+                        <button onclick="openModal('category')" class="bg-[#18181f] border border-white/10 hover:border-white/20 text-white text-[10px] font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all flex items-center gap-2">
+                            <i data-lucide="tag" class="w-4 h-4"></i> new Category
+                        </button>
                         <button onclick="openModal('expense')" class="bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all flex items-center gap-2">
                             <i data-lucide="plus" class="w-4 h-4"></i> New Expense
                         </button>
@@ -182,77 +217,79 @@
                         </div>
                     </div>
 
-                    <div class="lg:col-span-2 bg-[#18181f] border border-white/[0.05] rounded-2xl shadow-2xl overflow-hidden">
-                        <div class="p-6 bg-white/[0.02] border-b border-white/[0.05] flex justify-between items-center">
-                            <h3 class="text-white font-bold text-xs uppercase tracking-widest">Ledger History</h3>
-                            <span class="text-[10px] text-zinc-500 font-mono">{{ $expenses->total() }} Entries</span>
+                    <div class="lg:col-span-2 space-y-8">
+                        <div class="bg-[#18181f] border border-white/[0.05] rounded-2xl shadow-2xl overflow-hidden">
+                            <div class="p-6 bg-white/[0.02] border-b border-white/[0.05] flex justify-between items-center">
+                                <h3 class="text-white font-bold text-xs uppercase tracking-widest">Ledger History</h3>
+                                <span class="text-[10px] text-zinc-500 font-mono">{{ $expenses->total() }} Entries</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <tbody class="divide-y divide-white/[0.02]">
+                                        @foreach($expenses as $expense)
+                                        <tr class="group hover:bg-white/[0.01] transition-colors">
+                                            <td class="px-8 py-5 text-[10px] text-zinc-500 font-mono">{{ $expense->date->format('Y.m.d') }}</td>
+                                            <td class="px-8 py-5">
+                                                <p class="text-xs font-bold text-white tracking-tight">{{ $expense->title }}</p>
+                                                <p class="text-[9px] text-zinc-600 uppercase font-black tracking-widest mt-1">{{ $expense->category->name }}</p>
+                                            </td>
+                                            <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($expense->amount, 2) }} DH</td>
+                                            <td class="px-8 py-5 text-right">
+                                                @if($expense->user_id === Auth::id())
+                                                    <form action="{{ route('dashboard.expenses.delete', $expense->id) }}" method="POST">
+                                                        @csrf @method('DELETE')
+                                                        <button class="text-zinc-700 hover:text-red-500 transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="p-4 border-t border-white/5 bg-black/10">
+                                {{ $expenses->links() }}
+                            </div>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <tbody class="divide-y divide-white/[0.02]">
-                                    @foreach($expenses as $expense)
-                                    <tr class="group hover:bg-white/[0.01] transition-colors">
-                                        <td class="px-8 py-5 text-[10px] text-zinc-500 font-mono">{{ $expense->date->format('Y.m.d') }}</td>
-                                        <td class="px-8 py-5">
-                                            <p class="text-xs font-bold text-white tracking-tight">{{ $expense->title }}</p>
-                                            <p class="text-[9px] text-zinc-600 uppercase font-black tracking-widest mt-1">{{ $expense->category->name }}</p>
-                                        </td>
-                                        <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($expense->amount, 2) }} DH</td>
-                                        <td class="px-8 py-5 text-right">
-                                            @if($expense->user_id === Auth::id())
-                                                <form action="{{ route('dashboard.expenses.delete', $expense->id) }}" method="POST">
-                                                    @csrf @method('DELETE')
-                                                    <button class="text-zinc-700 hover:text-red-500 transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="p-4 border-t border-white/5 bg-black/10">
-                            {{ $expenses->links() }}
-                        </div>
-                    </div>
 
-                    <div class="lg:col-span-2 bg-[#18181f] border border-white/[0.05] rounded-2xl shadow-2xl overflow-hidden">
-                        <div class="p-6 bg-white/[0.02] border-b border-white/[0.05] flex justify-between items-center">
-                            <h3 class="text-white font-bold text-xs uppercase tracking-widest">Settlements</h3>
-                            <span class="text-[10px] text-zinc-500 font-mono">{{ $settlements->count() }} Entries</span>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <tbody class="divide-y divide-white/[0.02]">
-                                    @forelse($settlements as $settlement)
-                                    <tr class="group hover:bg-white/[0.01] transition-colors">
-                                        <td class="px-8 py-5 text-[10px] text-zinc-500 font-mono">{{ $settlement->created_at->format('Y.m.d') }}</td>
-                                        <td class="px-8 py-5 text-xs text-zinc-300 font-bold">
-                                            {{ $settlement->owes->full_name }}
-                                            <span class="text-zinc-600">→</span>
-                                            {{ $settlement->receives->full_name }}
-                                        </td>
-                                        <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($settlement->amount, 2) }} DH</td>
-                                        <td class="px-8 py-5 text-right">
-                                            @if($settlement->is_paid)
-                                                <span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Paid</span>
-                                            @elseif($settlement->owes_user_id === Auth::id())
-                                                <form action="{{ route('dashboard.settlements.paid', $settlement->id) }}" method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <button class="text-[9px] bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg uppercase tracking-widest font-black transition-colors">Mark Paid</button>
-                                                </form>
-                                            @else
-                                                <span class="text-[9px] bg-white/5 text-zinc-500 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Pending</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="4" class="px-8 py-8 text-center text-[10px] uppercase tracking-widest text-zinc-600">No settlements yet.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                        <div class="bg-[#18181f] border border-white/[0.05] rounded-2xl shadow-2xl overflow-hidden">
+                            <div class="p-6 bg-white/[0.02] border-b border-white/[0.05] flex justify-between items-center">
+                                <h3 class="text-white font-bold text-xs uppercase tracking-widest">Settlements</h3>
+                                <span class="text-[10px] text-zinc-500 font-mono">{{ $settlements->count() }} Entries</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <tbody class="divide-y divide-white/[0.02]">
+                                        @forelse($settlements as $settlement)
+                                        <tr class="group hover:bg-white/[0.01] transition-colors">
+                                            <td class="px-8 py-5 text-[10px] text-zinc-500 font-mono">{{ $settlement->created_at->format('Y.m.d') }}</td>
+                                            <td class="px-8 py-5 text-xs text-zinc-300 font-bold">
+                                                {{ $settlement->owes->full_name }}
+                                                <span class="text-zinc-600">→</span>
+                                                {{ $settlement->receives->full_name }}
+                                            </td>
+                                            <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($settlement->amount, 2) }} DH</td>
+                                            <td class="px-8 py-5 text-right">
+                                                @if($settlement->is_paid)
+                                                    <span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Paid</span>
+                                                @elseif($settlement->owes_user_id === Auth::id())
+                                                    <form action="{{ route('dashboard.settlements.paid', $settlement->id) }}" method="POST">
+                                                        @csrf @method('PATCH')
+                                                        <button class="text-[9px] bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg uppercase tracking-widest font-black transition-colors">Mark Paid</button>
+                                                    </form>
+                                                @else
+                                                    <span class="text-[9px] bg-white/5 text-zinc-500 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Pending</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="4" class="px-8 py-8 text-center text-[10px] uppercase tracking-widest text-zinc-600">No settlements yet.</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -263,9 +300,9 @@
     <script>
         const modalContainer = document.getElementById('modal-container');
         const modalBackdrop = document.getElementById('modal-backdrop');
-        const allModals = ['create', 'join', 'expense', 'confirm', 'invite'];
+        const allModals = ['create', 'join', 'expense', 'confirm', 'invite', 'category'];
 
-        function openModal(type) {
+        window.openModal = function(type) {
             modalContainer.classList.remove('hidden');
             allModals.forEach(m => {
                 const el = document.getElementById(`modal-${m}`);
@@ -274,14 +311,14 @@
             const target = document.getElementById(`modal-${type}`);
             if(target) {
                 target.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    target.classList.remove('scale-95', 'opacity-0');
-                    target.classList.add('scale-100', 'opacity-100');
-                });
+                // Trigger reflow for animation
+                void target.offsetWidth;
+                target.classList.remove('scale-95', 'opacity-0');
+                target.classList.add('scale-100', 'opacity-100');
             }
-        }
+        };
 
-        function closeModal() {
+        window.closeModal = function() {
             allModals.forEach(m => {
                 const target = document.getElementById(`modal-${m}`);
                 if(target) {
@@ -292,7 +329,7 @@
             setTimeout(() => {
                 modalContainer.classList.add('hidden');
             }, 300);
-        }
+        };
 
         modalContainer.addEventListener('click', (e) => {
             if (e.target === modalBackdrop || e.target.closest('.modal-close')) {
@@ -306,6 +343,16 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) window.lucide.createIcons();
+
+            // Auto-hide success alerts
+            const alerts = document.querySelectorAll('.js-alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            });
         });
     </script>
 </x-app-layout>
