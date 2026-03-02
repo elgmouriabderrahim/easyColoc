@@ -1,85 +1,112 @@
 <x-app-layout>
     <div class="min-h-screen bg-[#0d0d12] text-zinc-400 font-sans antialiased p-6 lg:p-12 relative overflow-x-hidden">
         
-        <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center {{ ($errors->any() || $errors->invite->any()) ? '' : 'hidden' }}">
             <div id="modal-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
             
-            <div id="modal-category" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
+            <div id="modal-category" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md {{ old('_form') === 'category' ? '' : 'hidden' }} scale-100 opacity-100 transition-all duration-300">
                 <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
                 <h3 class="text-white font-bold text-xl mb-6 uppercase tracking-widest">Add Category</h3>
                 <form action="{{ route('dashboard.categories.create') }}" method="POST" class="space-y-4">
                     @csrf
+                    <input type="hidden" name="_form" value="category">
                     <label class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Category Name</label>
-                    <input type="text" name="name" required placeholder="GROCERIES" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0 uppercase font-mono">
+                    <input type="text" name="name" value="{{ old('name') }}"  placeholder="GROCERIES" class="w-full bg-[#0d0d12] border {{ $errors->has('name') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0 uppercase font-mono">
+                    @error('name') <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $message }}</p> @enderror
                     <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Save Category</button>
                 </form>
             </div>
 
-            <div id="modal-invite" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
+            <div id="modal-invite" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md {{ old('_form') === 'invite' ? '' : 'hidden' }} scale-100 opacity-100 transition-all duration-300">
                 <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
                 <h3 class="text-white font-bold text-xl mb-2 uppercase tracking-widest">Invite Resident</h3>
                 <p class="text-[10px] text-zinc-500 mb-6 uppercase tracking-widest">Send an encrypted access link via email.</p>
+                
                 <form action="{{ route('dashboard.members.invite') }}" method="POST" class="space-y-4">
                     @csrf
+                    <input type="hidden" name="_form" value="invite">
                     <label class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Resident Email</label>
-                    <input type="email" name="email" required placeholder="resident@network.com" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0">
+                    <input type="email" name="email" value="{{ old('email') }}"  placeholder="resident@network.com" class="w-full bg-[#0d0d12] border {{ $errors->invite->has('email') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0">
+                    @if($errors->invite->has('email'))
+                        <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $errors->invite->first('email') }}</p>
+                    @endif
                     <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Send Invitation</button>
                 </form>
             </div>
 
-            <div id="modal-create" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
+            <div id="modal-create" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md {{ old('_form') === 'create' ? '' : 'hidden' }} scale-100 opacity-100 transition-all duration-300">
                 <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
                 <h3 class="text-white font-bold text-xl mb-6 uppercase tracking-widest">Create Colocation</h3>
                 <form action="{{ route('dashboard.colocation.create') }}" method="POST" class="space-y-4">
                     @csrf
+                    <input type="hidden" name="_form" value="create">
                     <label class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Colocation Name</label>
-                    <input type="text" name="name" placeholder="debuggers" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0 uppercase font-mono">
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="debuggers" class="w-full bg-[#0d0d12] border {{ $errors->has('name') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0 uppercase font-mono">
+                    @error('name') <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $message }}</p> @enderror
                     <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Create Colocation</button>
                 </form>
             </div>
 
-            <div id="modal-join" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
+            <div id="modal-join" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md {{ old('_form') === 'join' ? '' : 'hidden' }} scale-100 opacity-100 transition-all duration-300">
                 <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
                 <h3 class="text-white font-bold text-xl mb-6 uppercase tracking-widest">Join Token</h3>
                 <form action="{{ route('dashboard.colocation.join') }}" method="POST" class="space-y-4">
                     @csrf
-                    <input type="text" name="invite_token" placeholder="colocation token" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0 uppercase font-mono">
+                    <input type="hidden" name="_form" value="join">
+                    <input type="text" name="invite_token" value="{{ old('invite_token') }}" placeholder="colocation token" class="w-full bg-[#0d0d12] border {{ $errors->has('invite_token') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 focus:ring-0 uppercase font-mono">
+                    @error('invite_token') <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $message }}</p> @enderror
                     <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Join Colocation</button>
                 </form>
             </div>
 
-            <div id="modal-expense" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-lg hidden scale-95 opacity-0 transition-all duration-300">
+            <div id="modal-expense" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md max-lg {{ old('_form') === 'expense' ? '' : 'hidden' }} scale-100 opacity-100 transition-all duration-300">
                 <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
                 <h3 class="text-white font-bold text-xl mb-6 uppercase tracking-widest">Log Expenditure</h3>
                 @if($categories->isEmpty())
                     <div class="text-center py-6">
-                        <p class="text-[10px] text-red-500 font-black uppercase tracking-widest mb-4 italic">Protocol Locked: No Categories</p>
+                        <p class="text-[10px] text-red-500 font-black uppercase tracking-widest mb-4 italic">Locked: No Categories</p>
+                        @if(Auth::user()->colocation_role === 'owner')
                         <button onclick="openModal('category')" class="bg-white/5 border border-white/10 text-white text-[10px] px-6 py-3 rounded-lg uppercase tracking-widest font-black hover:bg-white/10 transition-all">Create Category First</button>
+                        @else
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest">Ask your administrator to create expense categories before logging transactions.</p>
+                        @endif
                     </div>
                 @else
                 <form action="{{ route('dashboard.expenses.create') }}" method="POST" class="space-y-4">
                     @csrf
-                    <input type="text" name="title" placeholder="Expense Title" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
+                    <input type="hidden" name="_form" value="expense">
+                    <input type="text" name="title" value="{{ old('title') }}" placeholder="Expense Title" class="w-full bg-[#0d0d12] border {{ $errors->has('title') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
+                    @error('title') <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $message }}</p> @enderror
+                    
                     <div class="flex gap-4">
-                        <input type="number" step="0.01" name="amount" placeholder="0.00" class="w-1/2 bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
-                        <select name="category_id" class="w-1/2 bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-[10px] text-zinc-400 font-black uppercase tracking-widest focus:border-purple-500 outline-none">
-                            <option value="" disabled selected>Category</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="w-1/2">
+                            <input type="number" step="0.01" name="amount" value="{{ old('amount') }}" placeholder="0.00" class="w-full bg-[#0d0d12] border {{ $errors->has('amount') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
+                            @error('amount') <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $message }}</p> @enderror
+                        </div>
+                        <div class="w-1/2">
+                            <select name="category_id" class="w-full bg-[#0d0d12] border {{ $errors->has('category_id') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-[10px] text-zinc-400 font-black uppercase tracking-widest focus:border-purple-500 outline-none">
+                                <option value="" disabled {{ !old('category_id') ? 'selected' : '' }}>Category</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('category_id') <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $message }}</p> @enderror
+                        </div>
                     </div>
-                    <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full bg-[#0d0d12] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
+                    
+                    <input type="date" name="date" value="{{ old('date', date('Y-m-d')) }}" class="w-full bg-[#0d0d12] border {{ $errors->has('date') ? 'border-red-500' : 'border-white/10' }} rounded-lg px-4 py-3 text-sm text-white focus:border-purple-500 outline-none">
+                    @error('date') <p class="text-red-500 text-[9px] uppercase font-bold mt-1 tracking-widest">{{ $message }}</p> @enderror
+                    
                     <button class="w-full bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Execute Transaction</button>
                 </form>
                 @endif
@@ -93,7 +120,7 @@
                         @if(Auth::user()->colocation_role === 'owner')
                             <form action="{{ route('dashboard.colocation.cancel') }}" method="POST">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="w-full bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Shutdown Sector</button>
+                                <button type="submit" class="w-full bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Calncel Sector</button>
                             </form>
                         @else
                             <form action="{{ route('dashboard.colocation.leave') }}" method="POST">
@@ -105,6 +132,27 @@
                     <button onclick="closeModal()" class="w-full bg-[#2a2a35] text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">Cancel</button>
                 </div>
             </div>
+
+            <div id="modal-remove" class="modal-content relative bg-[#18181f] border border-white/10 p-8 rounded-2xl w-full max-w-md hidden scale-95 opacity-0 transition-all duration-300">
+                <button type="button" class="modal-close absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h3 class="text-white font-bold text-xl mb-2 uppercase tracking-widest">Eject Resident</h3>
+                <p class="text-[10px] text-zinc-500 mb-8 uppercase tracking-widest leading-relaxed">Confirm absolute removal of <span id="remove-member-name" class="text-purple-500 font-black"></span> from this network sector.</p>
+                
+                <form id="remove-member-form" action="" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="flex flex-col gap-3">
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all shadow-lg shadow-red-900/20">
+                            Execute Ejection
+                        </button>
+                        <button type="button" onclick="closeModal()" class="w-full bg-[#2a2a35] text-white text-[10px] font-black py-4 rounded-lg uppercase tracking-widest transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="max-w-[1300px] mx-auto space-y-8">
@@ -114,6 +162,18 @@
                     <div class="flex items-center gap-3">
                         <i data-lucide="check-circle" class="w-4 h-4"></i>
                         {{ session('success') }}
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="hover:text-white transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            @endif
+
+            @if (session('status'))
+                <div class="js-alert p-4 rounded-xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-between backdrop-blur-md mb-6 transition-all duration-500">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="info" class="w-4 h-4 text-purple-500"></i>
+                        {{ session('status') }}
                     </div>
                     <button onclick="this.parentElement.remove()" class="hover:text-white transition-colors">
                         <i data-lucide="x" class="w-4 h-4"></i>
@@ -146,9 +206,11 @@
                             Join Colocation
                         </button>
                     @else
-                        <button onclick="openModal('category')" class="bg-[#18181f] border border-white/10 hover:border-white/20 text-white text-[10px] font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all flex items-center gap-2">
-                            <i data-lucide="tag" class="w-4 h-4"></i> new Category
-                        </button>
+                        @if(Auth::user()->colocation_role === 'owner')
+                            <button onclick="openModal('category')" class="bg-[#18181f] border border-white/10 hover:border-white/20 text-white text-[10px] font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all flex items-center gap-2">
+                                <i data-lucide="tag" class="w-4 h-4"></i> new Category
+                            </button>
+                        @endif
                         <button onclick="openModal('expense')" class="bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black px-6 py-3 rounded-lg uppercase tracking-widest transition-all flex items-center gap-2">
                             <i data-lucide="plus" class="w-4 h-4"></i> New Expense
                         </button>
@@ -168,7 +230,6 @@
                 </div>
             @else
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
                     <div class="space-y-6">
                         <div class="bg-[#18181f] border border-white/[0.05] rounded-2xl p-8 shadow-2xl relative overflow-hidden group">
                             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -201,9 +262,19 @@
                                         </div>
                                         <span class="text-xs text-zinc-300 font-bold">{{ $member->full_name }}</span>
                                     </div>
-                                    <span class="text-[8px] bg-white/5 px-2 py-1 rounded-md text-zinc-500 font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {{ $member->colocation_role }}
-                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        @if(Auth::user()->colocation_role === 'owner' && $member->id !== Auth::id())
+                                            <button 
+                                                onclick="openRemoveModal('{{ $member->id }}', '{{ $member->full_name }}')"
+                                                class="text-zinc-700 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+                                            >
+                                                <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        @endif
+                                        <span class="text-[8px] bg-white/5 px-2 py-1 rounded-md text-zinc-500 font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {{ $member->colocation_role }}
+                                        </span>
+                                    </div>
                                 </div>
                                 @endforeach
                             </div>
@@ -212,7 +283,7 @@
                         <div class="bg-[#18181f] border border-white/[0.05] rounded-2xl p-6 shadow-2xl border-l-2 border-red-500/50">
                             <h3 class="text-white font-bold text-[10px] uppercase tracking-widest mb-2">Protocol Termination</h3>
                             <button onclick="openModal('confirm')" class="w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/10 text-[9px] font-black py-3 rounded-lg uppercase tracking-widest transition-all">
-                                {{ Auth::user()->colocation_role === 'owner' ? 'Shutdown Colocation' : 'Leave Colocation' }}
+                                {{ Auth::user()->colocation_role === 'owner' ? 'Cancel Colocation' : 'Leave Colocation' }}
                             </button>
                         </div>
                     </div>
@@ -300,7 +371,7 @@
     <script>
         const modalContainer = document.getElementById('modal-container');
         const modalBackdrop = document.getElementById('modal-backdrop');
-        const allModals = ['create', 'join', 'expense', 'confirm', 'invite', 'category'];
+        const allModals = ['create', 'join', 'expense', 'confirm', 'invite', 'category', 'remove'];
 
         window.openModal = function(type) {
             modalContainer.classList.remove('hidden');
@@ -310,12 +381,16 @@
             });
             const target = document.getElementById(`modal-${type}`);
             if(target) {
-                target.classList.remove('hidden');
-                // Trigger reflow for animation
-                void target.offsetWidth;
-                target.classList.remove('scale-95', 'opacity-0');
+                target.classList.remove('hidden', 'scale-95', 'opacity-0');
                 target.classList.add('scale-100', 'opacity-100');
             }
+        };
+
+        window.openRemoveModal = function(memberId, name) {
+            document.getElementById('remove-member-name').innerText = name;
+            const form = document.getElementById('remove-member-form');
+            form.action = `/dashboard/members/${memberId}`;
+            openModal('remove');
         };
 
         window.closeModal = function() {
@@ -344,7 +419,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) window.lucide.createIcons();
 
-            // Auto-hide success alerts
             const alerts = document.querySelectorAll('.js-alert');
             alerts.forEach(alert => {
                 setTimeout(() => {

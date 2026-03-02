@@ -16,7 +16,10 @@ use App\Http\Controllers\SettlementController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/invitation/confirm/{colocation}/{user}', [MemberController::class, 'acceptInvite'])
+    ->name('dashboard.invitation.confirm')
+    ->middleware(['auth', 'signed']);
+    
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

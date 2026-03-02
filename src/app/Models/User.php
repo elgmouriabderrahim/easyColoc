@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'reputation_score',
         'colocation_role',
         'is_banned',
+        'balance'
     ];
 
     /**
