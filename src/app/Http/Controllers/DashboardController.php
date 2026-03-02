@@ -38,11 +38,42 @@ class DashboardController extends Controller
 
     $currentBalance = (float) $user->balance;
 
-    $settlements = Settlement::with(['owes', 'receives'])
-        ->where('colocation_id', $colocation->id)
-        ->where(fn($q) => $q->where('owes_user_id', $user->id)->orWhere('receives_user_id', $user->id))
-        ->latest()
-        ->get();
+    $members = $colocation->users->where('balance', '!=', 0);
+
+    $debtors = $members->where('balance', '<', 0)->sortBy('balance'); 
+    $creditors = $members->where('balance', '>', 0)->sortByDesc('balance');
+
+    $settlements = collect();
+
+    $tempCreditors = $creditors->map(fn($u) => (object)[
+        'id' => $u->id, 
+        'full_name' => $u->full_name, 
+        'balance' => (float) $u->balance
+    ])->values();
+
+    foreach ($debtors as $debtor) {
+        $amountOwed = abs((float) $debtor->balance);
+
+        foreach ($tempCreditors as $creditor) {
+            if ($amountOwed <= 0 || $creditor->balance <= 0) continue;
+
+            $transfer = min($amountOwed, $creditor->balance);
+
+            $settlements->push((object)[
+                'id' => null,
+                'owes_user_id' => $debtor->id,
+                'receives_user_id' => $creditor->id,
+                'owes' => (object)['full_name' => $debtor->full_name],
+                'receives' => (object)['full_name' => $creditor->full_name],
+                'amount' => $transfer,
+                'is_paid' => false,
+                'created_at' => now(),
+            ]);
+
+            $amountOwed -= $transfer;
+            $creditor->balance -= $transfer;
+        }
+    }
 
     return view('dashboard', [
         'hasColocation' => true,

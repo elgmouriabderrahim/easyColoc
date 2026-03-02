@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('delete');
     });
 
-    Route::patch('/dashboard/settlements/{settlement}/paid', [SettlementController::class, 'markAsPaid'])->name('dashboard.settlements.paid');
+    Route::post('/dashboard/settlements/paid', [SettlementController::class, 'markAsPaid'])->name('dashboard.settlements.paid');
 });
 
 

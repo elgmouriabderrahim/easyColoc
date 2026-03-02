@@ -322,31 +322,39 @@
                                 {{ $expenses->links() }}
                             </div>
                         </div>
-
                         <div class="bg-[#18181f] border border-white/[0.05] rounded-2xl shadow-2xl overflow-hidden">
                             <div class="p-6 bg-white/[0.02] border-b border-white/[0.05] flex justify-between items-center">
-                                <h3 class="text-white font-bold text-xs uppercase tracking-widest">Settlements</h3>
-                                <span class="text-[10px] text-zinc-500 font-mono">{{ $settlements->count() }} Entries</span>
+                                <h3 class="text-white font-bold text-xs uppercase tracking-widest">Active Debts</h3>
+                                <span class="text-[10px] text-zinc-500 font-mono">{{ count($settlements) }} Protocols</span>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
                                     <tbody class="divide-y divide-white/[0.02]">
                                         @forelse($settlements as $settlement)
                                         <tr class="group hover:bg-white/[0.01] transition-colors">
-                                            <td class="px-8 py-5 text-[10px] text-zinc-500 font-mono">{{ $settlement->created_at->format('Y.m.d') }}</td>
+                                            <td class="px-8 py-5 text-[10px] text-zinc-500 font-mono">
+                                                {{ $settlement->created_at->format('Y.m.d') }}
+                                            </td>
                                             <td class="px-8 py-5 text-xs text-zinc-300 font-bold">
                                                 {{ $settlement->owes->full_name }}
-                                                <span class="text-zinc-600">→</span>
+                                                <span class="text-zinc-600 px-2">→</span>
                                                 {{ $settlement->receives->full_name }}
                                             </td>
-                                            <td class="px-8 py-5 text-sm font-black text-white text-right">{{ number_format($settlement->amount, 2) }} DH</td>
+                                            <td class="px-8 py-5 text-sm font-black text-white text-right">
+                                                {{ number_format($settlement->amount, 2) }} DH
+                                            </td>
                                             <td class="px-8 py-5 text-right">
-                                                @if($settlement->is_paid)
+                                                @if($settlement->id)
                                                     <span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Paid</span>
-                                                @elseif($settlement->owes_user_id === Auth::id())
-                                                    <form action="{{ route('dashboard.settlements.paid', $settlement->id) }}" method="POST">
-                                                        @csrf @method('PATCH')
-                                                        <button class="text-[9px] bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg uppercase tracking-widest font-black transition-colors">Mark Paid</button>
+                                                @elseif($settlement->receives_user_id === Auth::id())
+                                                    <form action="{{ route('dashboard.settlements.paid') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="owes_user_id" value="{{ $settlement->owes_user_id }}">
+                                                        <input type="hidden" name="receives_user_id" value="{{ $settlement->receives_user_id }}">
+                                                        <input type="hidden" name="amount" value="{{ $settlement->amount }}">
+                                                        <button class="text-[9px] bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg uppercase tracking-widest font-black transition-all">
+                                                            Mark as Paid
+                                                        </button>
                                                     </form>
                                                 @else
                                                     <span class="text-[9px] bg-white/5 text-zinc-500 px-3 py-2 rounded-lg uppercase tracking-widest font-black">Pending</span>
@@ -355,7 +363,9 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="4" class="px-8 py-8 text-center text-[10px] uppercase tracking-widest text-zinc-600">No settlements yet.</td>
+                                            <td colspan="4" class="px-8 py-8 text-center text-[10px] uppercase tracking-widest text-zinc-600 italic">
+                                                All accounts are balanced. No active debts.
+                                            </td>
                                         </tr>
                                         @endforelse
                                     </tbody>

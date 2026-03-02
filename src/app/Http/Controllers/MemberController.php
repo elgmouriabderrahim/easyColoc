@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail; 
+use Illuminate\Support\Facades\DB;
 use App\Mail\ColocationInvite; 
 
 class MemberController extends Controller
@@ -98,8 +99,30 @@ class MemberController extends Controller
         if ($member->colocation_role === 'owner') {
             return back()->withErrors(['member' => 'Cannot remove owner from colocation.']);
         }
-        
-        $member->update(['colocation_id' => null, 'colocation_role' => null, 'reputation_score' => 0,]);
+
+        DB::transaction(function () use ($owner, $member) {
+            $owner->refresh();
+            $member->refresh();
+
+            if ((int) $member->colocation_id !== (int) $owner->colocation_id) {
+                abort(403);
+            }
+
+            $owner->increment('balance', $member->balance);
+
+            if ($member->balance > 0) {
+                $member->increment('reputation_score', 1);
+            } elseif ($member->balance < 0) {
+                $member->decrement('reputation_score', 1);
+            }
+
+            $member->update([
+                'balance' => 0,
+                'colocation_id' => null,
+                'colocation_role' => null,
+            ]);
+        });
+
         return back()->with('status', 'Member removed.');
     }
 }
